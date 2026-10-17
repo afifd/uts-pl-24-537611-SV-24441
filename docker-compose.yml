@@ -1,0 +1,32 @@
+services:
+  utskepl_postgres:
+    image: postgres:18
+    container_name: utskepl_postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+
+    ports:
+      - "127.0.0.1:5432:5432"
+
+    volumes:
+      - utskepl:/var/lib/postgresql
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+    networks:
+      - utskepl_net
+
+volumes:
+  utskepl:
+
+networks:
+  utskepl_net:
+    driver: bridge
