@@ -1,0 +1,85 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+input, textarea {
+  border: 1px solid black;
+  padding: 0.4rem;
+  border-radius: 4px;
+  width: 100%;
+  font: inherit;
+}
+
+.btn {
+  border: 1px solid black;
+  background: none;
+  cursor: pointer;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font: inherit;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-danger {
+  color: red;
+  border-color: red;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.alert {
+  border: 1px solid black;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.alert-danger {
+  border-color: red;
+  color: red;
+}
+
+.alert-success {
+  border-color: green;
+  color: green;
+}
+
+.alert button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.invalid-feedback {
+  color: red;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid black;
+  padding: 0.5rem;
+  text-align: left;
+}
