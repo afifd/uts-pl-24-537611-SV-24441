@@ -16,6 +16,11 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - utskepl_net
 
@@ -34,6 +39,8 @@ services:
       APP_DEBUG: "false"
       APP_KEY: ${APP_KEY}
       APP_URL: http://localhost:8000
+      LOG_CHANNEL: stdout
+      LOG_LEVEL: debug
       DB_CONNECTION: pgsql
       DB_HOST: utskepl_postgres
       DB_PORT: 5432
@@ -45,6 +52,17 @@ services:
       QUEUE_CONNECTION: database
     ports:
       - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - utskepl_net
 
@@ -55,9 +73,15 @@ services:
     container_name: utskepl_frontend
     restart: unless-stopped
     depends_on:
-      - utskepl_backend
+      utskepl_backend:
+        condition: service_healthy
     ports:
       - "${FRONTEND_PORT:-8080}:80"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - utskepl_net
 
