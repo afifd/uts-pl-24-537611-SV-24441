@@ -108,7 +108,7 @@ class ItemController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Item $item): JsonResponse
+    public function destroy(Request $request, Item $item): JsonResponse
     {
         $itemId = $item->id;
         $item->delete();
