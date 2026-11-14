@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Item;
+use App\Services\AuditLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -34,6 +35,24 @@ class ItemController extends Controller
 
         $item = Item::create($validated);
 
+        AuditLogger::info('Item persisted successfully', [
+            'who' => [
+                'actor' => auth()->id() ?? 'unauthenticated',
+                'client_ip' => $request->ip(),
+                'user_agent' => $request->userAgent() ?? 'unknown',
+            ],
+            'what' => [
+                'action' => 'create_item',
+                'resource' => 'Item',
+                'resource_id' => $item->id,
+                'title' => $item->title,
+                'amount' => $item->amount,
+            ],
+            'why' => [
+                'reason' => 'User submitted valid item payload for persistence',
+            ],
+        ]);
+
         return response()->json([
             'message' => 'Item created successfully.',
             'data' => $item,
@@ -63,6 +82,23 @@ class ItemController extends Controller
 
         $item->update($validated);
 
+        AuditLogger::info('Item updated successfully', [
+            'who' => [
+                'actor' => auth()->id() ?? 'unauthenticated',
+                'client_ip' => $request->ip(),
+                'user_agent' => $request->userAgent() ?? 'unknown',
+            ],
+            'what' => [
+                'action' => 'update_item',
+                'resource' => 'Item',
+                'resource_id' => $item->id,
+                'updated_fields' => array_keys($validated),
+            ],
+            'why' => [
+                'reason' => 'User submitted valid item payload for update',
+            ],
+        ]);
+
         return response()->json([
             'message' => 'Item updated successfully.',
             'data' => $item->fresh(),
@@ -72,9 +108,26 @@ class ItemController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Item $item): JsonResponse
+    public function destroy(Request $request, Item $item): JsonResponse
     {
+        $itemId = $item->id;
         $item->delete();
+
+        AuditLogger::info('Item deleted successfully', [
+            'who' => [
+                'actor' => auth()->id() ?? 'unauthenticated',
+                'client_ip' => $request->ip(),
+                'user_agent' => $request->userAgent() ?? 'unknown',
+            ],
+            'what' => [
+                'action' => 'delete_item',
+                'resource' => 'Item',
+                'resource_id' => $itemId,
+            ],
+            'why' => [
+                'reason' => 'User requested item removal',
+            ],
+        ]);
 
         return response()->json([
             'message' => 'Item deleted successfully.',

@@ -1,0 +1,52 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "/etc/prometheus/alert.rules.yml"
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "node-exporter"
+    static_configs:
+      - targets: ["utskepl_node_exporter:9100"]
+
+  - job_name: "cadvisor"
+    static_configs:
+      - targets: ["utskepl_cadvisor:8080"]
+    metric_relabel_configs:
+      - source_labels: [id]
+        regex: ".*libpod-([0-9a-f]{12}).*"
+        target_label: "container_id"
+        replacement: "${1}"
+      - source_labels: [container_id]
+        regex: "9f5200ffa5db"
+        target_label: "container_name"
+        replacement: "utskepl_postgres"
+      - source_labels: [container_id]
+        regex: "85ed7bc334eb"
+        target_label: "container_name"
+        replacement: "utskepl_backend"
+      - source_labels: [container_id]
+        regex: "00a745beafa8"
+        target_label: "container_name"
+        replacement: "utskepl_frontend"
+      - source_labels: [container_id]
+        regex: "35c0cb75fb38"
+        target_label: "container_name"
+        replacement: "utskepl_prometheus"
+      - source_labels: [container_id]
+        regex: "28aa386161b3"
+        target_label: "container_name"
+        replacement: "utskepl_grafana"
+      - source_labels: [container_id]
+        regex: "e58c4a346480"
+        target_label: "container_name"
+        replacement: "utskepl_node_exporter"
+      - source_labels: [container_id]
+        regex: "488e2f6c0d9a|a95a5cd9dadb"
+        target_label: "container_name"
+        replacement: "utskepl_cadvisor"
