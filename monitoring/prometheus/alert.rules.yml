@@ -1,0 +1,12 @@
+groups:
+  - name: service_status_alerts
+    rules:
+      - alert: ServiceDown
+        expr: up == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Layanan {{ $labels.job }} ({{ $labels.instance }}) tidak dapat dihubungi"
+          description: "Target monitoring {{ $labels.instance }} pada job {{ $labels.job }} berstatus DOWN (up == 0) selama lebih dari 30 detik."
+          action: "Periksa status container layanan dengan menjalankan 'podman ps -a' atau 'docker compose ps', lakukan inspeksi log menggunakan 'docker compose logs <service>' untuk mendeteksi penyebab crash atau kegagalan jaringan, lalu lakukan restart container dengan 'docker compose restart <service>'."
